@@ -5,13 +5,13 @@
   "main": "index.html",
   "window": {
     "title": "Avro schema viewer",
-    "toolbar": true,
+    "toolbar": false,
     "frame": true,
     "resizable": true,
     "position": "center",
     "width": 1024,
     "height": 768,
-    "single-instance": false
+    "single-instance": true
   },
   "repository": {
     "url": "https://github.com/abahdanovich/avroview"

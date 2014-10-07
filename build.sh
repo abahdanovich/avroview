@@ -19,6 +19,7 @@ test -x "$NW_HOME/nw" || fatal "Error: \`nw\` executable not found in $NW_HOME. 
 echo "Preparing to build app package..."
 
 cd `dirname $0`
+mkdir -p "$BUILD_DIR"
 cd $APP_DIR
 zip -qr "../$BUILD_DIR/app.nw" $FILES_TO_PACKAGE
 cd ..
