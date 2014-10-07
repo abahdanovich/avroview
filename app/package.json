@@ -11,7 +11,7 @@
     "position": "center",
     "width": 1024,
     "height": 768,
-    "single-instance": true
+    "single-instance": false
   },
   "repository": {
     "url": "https://github.com/abahdanovich/avroview"

@@ -13,17 +13,28 @@ var dom = {
 };
 var max_font_size = 26;
 var min_font_size = 16;
-var all_nodes = [];
+var all_nodes;
 
 win.maximize();
 win.on('loaded', function(){
-  setTimeout(main, 100);
+  setTimeout(function(){
+    main(app.argv);
+  }, 100);
+});
+
+if (process.env.SHOW_DEVTOOLS) {
+  win.showDevTools();
+}
+
+app.on('open', function(path) {
+  var argv = String.prototype.split.call(arguments[0], /\s+/).splice(1);
+  main(argv);
 });
 
 // --------------------------------------------------------
 
-function main(){
-  if (app.argv.length < 1) {
+function main(argv){
+  if (argv.length < 1) {
     alert("Expected file name as an argument");
     app.quit();
   }
@@ -31,12 +42,23 @@ function main(){
   var max_depth;
   var container = $(dom.container);
 
-  if (app.argv.length > 1) {
-    max_depth = parseInt(app.argv[1], 10); 
+  if (argv.length > 1) {
+    max_depth = parseInt(argv[1], 10); 
   }
 
-  var schema = readSchema();
+  all_nodes = [];
+
+  var schema = readSchema(argv[0]);
   var data = parseTree(schema, max_depth);
+
+  if (graph) {
+    graph.setData({
+      nodes: [],
+      edges: []
+    });
+
+    graph = null; 
+  }
 
   container.empty();
 
@@ -46,11 +68,11 @@ function main(){
 
   var search_nodes_debounced = _.debounce(searchNodes, 500);
 
-  $(dom.search).on('keyup', function(){
+  $(dom.search).off().on('keyup', function(){
     search_nodes_debounced();
   });
 
-  $('input:checkbox', dom.toolbar).on('change', function(){
+  $('input:checkbox', dom.toolbar).off().on('click', function(){
     search_nodes_debounced();
   });
 }
@@ -81,8 +103,8 @@ function searchNodes() {
   graph.selectNodes(getNodesIds(text, fields));
 }
 
-function readSchema() {
-  var fileText = fs.readFileSync(app.argv[0]).toString();
+function readSchema(filename) {
+  var fileText = fs.readFileSync(filename).toString();
   return JSON.parse(fileText);  
 }
 
