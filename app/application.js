@@ -61,7 +61,7 @@ function parseTree(root, max_depth) {
   });
 
   root.fields.forEach(function(field) {
-    parseLevel(field, nodes, edges, 1, 1, max_depth, root.namespace);
+    parseLevel(field, nodes, edges, 1, 1, max_depth, root.namespace, []);
   });
 
   return  {
@@ -70,7 +70,7 @@ function parseTree(root, max_depth) {
   };
 }
 
-function parseLevel(root, nodes, edges, parent_id, level, max_depth, namespace) {
+function parseLevel(root, nodes, edges, parent_id, level, max_depth, namespace, ancestors) {
   var node_id = nodes.length + 1;
   var type_def;
 
@@ -110,8 +110,12 @@ function parseLevel(root, nodes, edges, parent_id, level, max_depth, namespace) 
     }
   };
 
-  var get_description = function(doc, type_name, type_def) {
+  var get_description = function(doc, type_name, type_def, ancestors) {
     var result = [];
+
+    if (ancestors && ancestors.length) {
+      result.push(ancestors.join('.'));
+    }
 
     if (type_name) {
       var str;
@@ -148,12 +152,24 @@ function parseLevel(root, nodes, edges, parent_id, level, max_depth, namespace) 
     type_name = root.type;
   }
 
+  var new_namespace;
+
   if (type_def && type_def.hasOwnProperty('namespace')) {
-    namespace = type_def.namespace;
+    new_namespace = type_def.namespace;
   }
 
-  var label = decorate(root.name || 'unnamed', type_name);
-  var title = get_description(root.doc, type_name, type_def);
+  var name = root.name || 'unnamed';
+  var path_element;
+
+  if (type_name && type_name === 'array') {
+    path_element = name + '[]';
+  } else {
+    path_element = name;
+  }
+
+  var label = decorate(name, type_name);
+  var new_ancestors = ancestors.concat([path_element]);
+  var title = get_description(root.doc, type_name, type_def, new_ancestors);
 
   nodes.push({
     id: node_id,
@@ -184,7 +200,7 @@ function parseLevel(root, nodes, edges, parent_id, level, max_depth, namespace) 
 
     if (fields) {
       fields.forEach(function(field) {
-        parseLevel(field, nodes, edges, node_id, level+1, max_depth, namespace);
+        parseLevel(field, nodes, edges, node_id, level+1, max_depth, new_namespace ? new_namespace : namespace, new_ancestors);
       });
     }
   }
