@@ -11,10 +11,16 @@
     <link rel="stylesheet" href="application.css">
 
     <script src="vendors/jquery/jquery.min.js"></script>
+    <script src="vendors/underscore/underscore-min.js"></script>
     <script src="vendors/vis/vis.min.js"></script>
     <script src="application.js"></script>
   </head>
   <body>
+    <div id="toolbar">
+      <label>Search: </label><input type="text" name="search" class="search">
+      <input type="checkbox" name="name" checked="checked"><label>name</label>
+      <input type="checkbox" name="description"><label>description</label>
+    </div>
     <div id="container"><div class="loading">loading...</div></div>
   </body>
 </html>

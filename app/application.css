@@ -5,3 +5,9 @@
 .loading {
   font-size: 20px;
 }
+
+#toolbar {
+  position: absolute;
+  z-index: 100;
+  display: none;
+}

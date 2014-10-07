@@ -6,9 +6,14 @@ var fs = require('fs');
 var win = gui.Window.get();
 
 var graph;
-var container_id = 'container';
+var dom = {
+  container: '#container',
+  search: 'input.search',
+  toolbar: '#toolbar'
+};
 var max_font_size = 26;
 var min_font_size = 16;
+var all_nodes = [];
 
 win.maximize();
 win.on('loaded', function(){
@@ -24,7 +29,7 @@ function main(){
   }
 
   var max_depth;
-  var container = $('#'+container_id);
+  var container = $(dom.container);
 
   if (app.argv.length > 1) {
     max_depth = parseInt(app.argv[1], 10); 
@@ -36,6 +41,44 @@ function main(){
   container.empty();
 
   graph = drawGraph(data, container[0]);  
+
+  $(dom.toolbar).show();
+
+  var search_nodes_debounced = _.debounce(searchNodes, 500);
+
+  $(dom.search).on('keyup', function(){
+    search_nodes_debounced();
+  });
+
+  $('input:checkbox', dom.toolbar).on('change', function(){
+    search_nodes_debounced();
+  });
+}
+
+function getNodesIds(text, fields) {
+  if(_.isEmpty(text)) {
+    return [];
+  }
+
+  var re = new RegExp(text, "i");
+  var nodes = all_nodes.filter(function(node){
+    return _.any(fields, function(field){
+      return node.hasOwnProperty(field) && node[field].match(re);
+    });
+  });
+
+  return nodes.map(function(node){
+    return node.id;
+  });  
+}
+
+function searchNodes() {
+  var text = $(dom.search).val();
+  var fields = $('input:checkbox:checked', dom.toolbar)
+    .map(function(){ 
+      return $(this).attr('name'); 
+    }).get();
+  graph.selectNodes(getNodesIds(text, fields));
 }
 
 function readSchema() {
@@ -47,9 +90,10 @@ function parseTree(root, max_depth) {
   var nodes = [];
   var edges = [];
 
-  var label = root.name || 'unnamed root';
+  var label = root.name || 'unnamed_root';
+  var path = root.namespace ? (root.namespace+'.'+label) : label;
 
-  nodes.push({
+  var node = {
     id: 1,
     label: label,
     shape: 'box',
@@ -57,7 +101,14 @@ function parseTree(root, max_depth) {
     borderWidth: 2,
     fontSize: max_font_size,
     fontColor: 'red',
-    title: root.namespace ? (root.namespace+'.'+label) : label
+    title: path
+  };
+  nodes.push(node);
+
+  all_nodes.push({
+    id: node.id,
+    name: root.name || '',
+    description: path
   });
 
   root.fields.forEach(function(field) {
@@ -95,7 +146,7 @@ function parseLevel(root, nodes, edges, parent_id, level, max_depth, namespace, 
     }
   };
 
-  var get_color = function(type_name) {
+  var getColor = function(type_name) {
     switch (type_name) {
       case 'string': return 'blue';
       case 'double':
@@ -110,7 +161,7 @@ function parseLevel(root, nodes, edges, parent_id, level, max_depth, namespace, 
     }
   };
 
-  var get_description = function(doc, type_name, type_def, ancestors) {
+  var getDescription = function(doc, type_name, type_def, ancestors) {
     var result = [];
 
     if (ancestors && ancestors.length) {
@@ -169,15 +220,23 @@ function parseLevel(root, nodes, edges, parent_id, level, max_depth, namespace, 
 
   var label = decorate(name, type_name);
   var new_ancestors = ancestors.concat([path_element]);
-  var title = get_description(root.doc, type_name, type_def, new_ancestors);
+  var title = getDescription(root.doc, type_name, type_def, new_ancestors);
 
-  nodes.push({
+  var node = {
     id: node_id,
     label: label,
     fontSize: Math.max(min_font_size, max_font_size-(3*level)),
     shape: 'ellipse',
     title: title,
-    fontColor: get_color(type_name)
+    fontColor: getColor(type_name)
+  };
+
+  nodes.push(node);
+
+  all_nodes.push({
+    id: node.id,
+    name: root.name || '',
+    description: title
   });
 
   edges.push({
@@ -210,6 +269,16 @@ function drawGraph(data, container) {
   var options = {
     edges: {
       style: "arrow"
+    },
+    nodes: {
+      color: {
+        background: '#97C2FC',
+        border: '#2B7CE9',
+        highlight: {
+          background: 'yellow',
+          border: '#2B7CE9'
+        }
+      },
     },
     // hierarchicalLayout: {
     //   layout: 'direction',

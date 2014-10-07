@@ -4,7 +4,7 @@
   "globals": {
     "App" : true
   },
-  "predef": ["require", "$", "vis"],
+  "predef": ["require", "$", "_", "vis"],
   "globalstrict": true,
   "sub": true,
   "browser": true,
