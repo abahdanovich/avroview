@@ -1,0 +1,14 @@
+{
+  "undef": true,
+  "unused": true,
+  "globals": {
+    "App" : true
+  },
+  "predef": ["require", "$", "vis"],
+  "globalstrict": true,
+  "sub": true,
+  "browser": true,
+  "devel": true,
+  "curly": true,
+  "debug": true
+}

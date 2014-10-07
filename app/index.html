@@ -6,31 +6,15 @@
     <title>Avro viewer</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="stylesheet" href="vendors/foundation/css/normalize.css" />
-    <link rel="stylesheet" href="vendors/foundation/css/foundation.css" />
-
+    
+    <link rel="stylesheet" href="vendors/vis/vis.min.css">
     <link rel="stylesheet" href="application.css">
 
     <script src="vendors/jquery/jquery.min.js"></script>
-
-    <script src="vendors/foundation/js/vendor/modernizr.js"></script>
-    <script src="vendors/foundation/js/foundation.min.js"></script>
-    <script src="vendors/foundation/js/foundation/foundation.topbar.js"></script>
-
+    <script src="vendors/vis/vis.min.js"></script>
     <script src="application.js"></script>
-
-    <script>
-      $(document).foundation();
-    </script>
   </head>
   <body>
-    <div class="row">
-      <div class="large-12 columns">
-        <div class="panel">
-          <pre></pre>  
-        </div>    
-      </div>
-    </div>
+    <div id="container"></div>
   </body>
 </html>

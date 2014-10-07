@@ -9,8 +9,8 @@
     "frame": true,
     "resizable": true,
     "position": "center",
-    "width": 800,
-    "height": 600,
+    "width": 1024,
+    "height": 768,
     "single-instance": false
   },
   "repository": {
@@ -23,5 +23,10 @@
   "author": {
     "name": "Andrei Bahdanovich",
     "url": "bahdanovich@gmail.com"
-  }
+  },
+  "devDependencies": {
+    "gulp": "^3.8.8",
+    "gulp-jshint": "^1.8.4",
+    "gulp-notify": "^1.6.0"
+  }  
 }
