@@ -9,7 +9,9 @@ var graph;
 var dom = {
   container: '#container',
   search: 'input.search',
-  toolbar: '#toolbar'
+  toolbar: '#toolbar',
+  loading: '.loading',
+  spinner: '.spinner'
 };
 var max_font_size = 26;
 var min_font_size = 16;
@@ -39,11 +41,12 @@ function main(argv){
     app.quit();
   }
 
+  win.focus();
+
   var max_depth;
-  var container = $(dom.container);
 
   if (argv.length > 1) {
-    max_depth = parseInt(argv[1], 10); 
+    max_depth = parseInt(argv[1], 10);
   }
 
   all_nodes = [];
@@ -51,20 +54,13 @@ function main(argv){
   var schema = readSchema(argv[0]);
   var data = parseTree(schema, max_depth);
 
-  if (graph) {
-    graph.setData({
-      nodes: [],
-      edges: []
-    });
+  $(dom.loading).remove();
+  $(dom.spinner).show();
 
-    graph = null; 
-  }
-
-  container.empty();
-
-  graph = drawGraph(data, container[0]);  
+  graph = drawGraph(data, $(dom.container), graph);
 
   $(dom.toolbar).show();
+  $(dom.spinner).hide();
 
   var search_nodes_debounced = _.debounce(searchNodes, 500);
 
@@ -91,21 +87,21 @@ function getNodesIds(text, fields) {
 
   return nodes.map(function(node){
     return node.id;
-  });  
+  });
 }
 
 function searchNodes() {
   var text = $(dom.search).val();
   var fields = $('input:checkbox:checked', dom.toolbar)
-    .map(function(){ 
-      return $(this).attr('name'); 
+    .map(function(){
+      return $(this).attr('name');
     }).get();
   graph.selectNodes(getNodesIds(text, fields));
 }
 
 function readSchema(filename) {
   var fileText = fs.readFileSync(filename).toString();
-  return JSON.parse(fileText);  
+  return JSON.parse(fileText);
 }
 
 function parseTree(root, max_depth) {
@@ -160,7 +156,7 @@ function parseLevel(root, nodes, edges, parent_id, level, max_depth, namespace, 
       case 'map':  return '{'+src+'}';
       case 'enum': return ':'+src+':';
       case 'string': return '_'+src+'_';
-      case 'long': 
+      case 'long':
       case 'int': return '#'+src+'#';
       case 'double': return '~'+src+'~';
       case 'boolean': return '!'+src+'!';
@@ -287,7 +283,7 @@ function parseLevel(root, nodes, edges, parent_id, level, max_depth, namespace, 
   }
 }
 
-function drawGraph(data, container) {
+function drawGraph(data, container, graph) {
   var options = {
     edges: {
       style: "arrow"
@@ -305,7 +301,7 @@ function drawGraph(data, container) {
     // hierarchicalLayout: {
     //   layout: 'direction',
     //   direction: 'LR'
-    // },    
+    // },
     // stabilize: true,
     // stabilizationIterations: 10,
     // smoothCurves: false,
@@ -314,5 +310,13 @@ function drawGraph(data, container) {
     // dragNodes: false,
     // zoomable: false
   };
-  return new vis.Network(container, data, options);
+
+  if (! graph) {
+    container.empty();
+    return new vis.Network(container[0], data, options);
+  } else {
+    graph.setOptions(options);
+    graph.setData(data);
+    return graph;
+  }
 }
