@@ -2,8 +2,17 @@
   height: 100%;
 }
 
-.loading {
-  font-size: 20px;
+.spinner {
+  font-size: 18px;
+  display: none;
+  z-index: 100;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: #4B557C;
+  padding: 10px;
+  border: 1px solid #1B2650;
+  color: #FFF;
 }
 
 #toolbar {

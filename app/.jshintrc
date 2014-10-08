@@ -4,10 +4,11 @@
   "globals": {
     "App" : true
   },
-  "predef": ["require", "$", "_", "vis"],
+  "predef": ["$", "_", "vis"],
   "globalstrict": true,
   "sub": true,
   "browser": true,
+  "node": true,
   "devel": true,
   "curly": true,
   "debug": true
