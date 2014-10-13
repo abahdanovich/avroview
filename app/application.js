@@ -1,5 +1,7 @@
 "use strict";
 
+Raygun.init('ckFl4KevL38PByxMK3+Q1w==').attach();
+
 var gui = require('nw.gui');
 var app = gui.App;
 var fs = require('fs');
