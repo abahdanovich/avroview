@@ -279,7 +279,11 @@ function parseLevel(root, nodes, edges, parent_id, level, max_depth, namespace, 
 function drawGraph(data, container, graph) {
   var options = {
     edges: {
-      style: "arrow"
+      style: "arrow",
+      color: {
+        highlight: "green"
+      },
+      widthSelectionMultiplier: 3      
     },
     nodes: {
       color: {
