@@ -1,0 +1,9 @@
+[Desktop Entry]
+Terminal=false
+Icon=libreoffice-math
+Type=Application
+Categories=Application;Utility;
+Exec=/opt/avroview/avroview %f
+MimeType=application/avsc;
+Name=avroview
+Comment=AvroView tool
